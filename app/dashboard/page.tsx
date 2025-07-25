@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { 
   Shield, 
   AlertCircle, 
@@ -19,6 +20,7 @@ import {
 
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState('overview');
+  const router = useRouter();
 
   // Mock data for beautiful display
   const familyMembers = [
@@ -28,11 +30,15 @@ export default function DashboardPage() {
   ];
 
   const quickActions = [
-    { icon: Scan, label: 'Scan Ingredients', color: 'from-blue-500 to-cyan-400', action: 'scan' },
-    { icon: ChefHat, label: 'Meal Planner', color: 'from-purple-500 to-pink-400', action: 'meal' },
-    { icon: Search, label: 'Check Product', color: 'from-amber-500 to-orange-400', action: 'check' },
-    { icon: Calendar, label: 'Week Plan', color: 'from-emerald-500 to-green-400', action: 'calendar' },
+    { icon: Scan, label: 'Scan Ingredients', color: 'from-blue-500 to-cyan-400', action: '/scanner' },
+    { icon: ChefHat, label: 'Meal Planner', color: 'from-purple-500 to-pink-400', action: '/meal-planner' },
+    { icon: Search, label: 'Check Product', color: 'from-amber-500 to-orange-400', action: '/product-check' },
+    { icon: Calendar, label: 'Week Plan', color: 'from-emerald-500 to-green-400', action: '/calendar' },
   ];
+
+  const handleQuickAction = (action: string) => {
+    router.push(action);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
@@ -174,6 +180,7 @@ export default function DashboardPage() {
                 transition={{ delay: 0.5 + index * 0.1 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => handleQuickAction(action.action)}
                 className="relative overflow-hidden rounded-2xl p-6 text-white shadow-lg"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${action.color}`} />
@@ -224,6 +231,7 @@ export default function DashboardPage() {
         transition={{ delay: 0.8, type: 'spring' }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
+        onClick={() => router.push('/scanner')}
         className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center text-white"
       >
         <Scan className="w-6 h-6" />
