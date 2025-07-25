@@ -1,6 +1,6 @@
 // app/api/analyze-ingredients/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { checkIngredientsForAllergens } from '@/src/services/openai';
+import { checkIngredientsForAllergens } from '../../../src/services/openai';
 
 export async function POST(request: NextRequest) {
   try {
