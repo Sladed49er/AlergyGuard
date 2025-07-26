@@ -8,11 +8,11 @@ import {
   AlertTriangle,
   AlertCircle, 
   CheckCircle, 
-  XCircle,
-  Loader2,
+  X,
+  Loader,
   ArrowLeft,
   Sparkles,
-  ShieldAlert,
+  Shield,
   ShieldCheck,
   Info
 } from 'lucide-react';
@@ -95,8 +95,8 @@ export default function ScannerPage() {
   const getSafetyIcon = (rating: string) => {
     switch(rating) {
       case 'safe': return <ShieldCheck className="w-8 h-8" />;
-      case 'caution': return <ShieldAlert className="w-8 h-8" />;
-      case 'danger': return <XCircle className="w-8 h-8" />;
+      case 'caution': return <Shield className="w-8 h-8" />;
+      case 'danger': return <X className="w-8 h-8" />;
       default: return <Info className="w-8 h-8" />;
     }
   };
@@ -185,7 +185,7 @@ export default function ScannerPage() {
             >
               {isAnalyzing ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader className="w-5 h-5 animate-spin" />
                   <span>Analyzing...</span>
                 </>
               ) : (
