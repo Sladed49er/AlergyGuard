@@ -1,20 +1,30 @@
-import { NextResponse } from 'next/server'
+// app/api/auth/register/route.ts
+import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
-const prisma = new PrismaClient()
+const registerSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+})
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { email, password, name } = await request.json()
-
+    const body = await request.json()
+    
     // Validate input
-    if (!email || !password) {
+    const validatedFields = registerSchema.safeParse(body)
+    
+    if (!validatedFields.success) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Validation failed', details: validatedFields.error.flatten() },
         { status: 400 }
       )
     }
+
+    const { name, email, password } = validatedFields.data
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -23,7 +33,7 @@ export async function POST(request: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User already exists' },
+        { error: 'User with this email already exists' },
         { status: 400 }
       )
     }
@@ -34,29 +44,27 @@ export async function POST(request: Request) {
     // Create user
     const user = await prisma.user.create({
       data: {
+        name,
         email,
         password: hashedPassword,
-        name,
       }
     })
 
-    // Create a default profile for the user (themselves)
-    await prisma.profile.create({
-      data: {
-        userId: user.id,
-        name: name || 'Me',
-        relationship: 'self',
-      }
-    })
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user
 
     return NextResponse.json(
-      { message: 'User created successfully' },
+      { 
+        message: 'User created successfully', 
+        user: userWithoutPassword 
+      },
       { status: 201 }
     )
+
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { error: 'Something went wrong' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
